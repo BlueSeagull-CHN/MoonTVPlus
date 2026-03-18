@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 'use client';
 
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, ChevronRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -13,6 +13,7 @@ import {
 } from '@/lib/db.client';
 
 import VideoCard from '@/components/VideoCard';
+import PlayRecordsPanel from '@/components/PlayRecordsPanel';
 import VirtualScrollableRow from '@/components/VirtualScrollableRow';
 
 interface ContinueWatchingProps {
@@ -25,6 +26,7 @@ export default function ContinueWatching({ className }: ContinueWatchingProps) {
   >([]);
   const [loading, setLoading] = useState(true);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [showPlayRecordsPanel, setShowPlayRecordsPanel] = useState(false);
 
   // 处理播放记录数据更新的函数
   const updatePlayRecords = (allRecords: Record<string, PlayRecord>, limit?: number) => {
@@ -114,12 +116,21 @@ export default function ContinueWatching({ className }: ContinueWatchingProps) {
             继续观看
           </h2>
           {!loading && playRecords.length > 0 && (
-            <button
-              className='text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
-              onClick={() => setShowConfirmDialog(true)}
-            >
-              清空
-            </button>
+            <div className='flex items-center gap-1'>
+              <button
+                className='text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
+                onClick={() => setShowConfirmDialog(true)}
+              >
+                清空
+              </button>
+              <button
+                className='inline-flex h-8 w-8 items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200'
+                onClick={() => setShowPlayRecordsPanel(true)}
+                aria-label='查看全部播放记录'
+              >
+                <ChevronRight className='h-4 w-4' />
+              </button>
+            </div>
           )}
         </div>
       {loading ? (
@@ -279,6 +290,14 @@ export default function ContinueWatching({ className }: ContinueWatchingProps) {
           </div>
         </div>
       </div>,
+      document.body
+    )}
+
+    {showPlayRecordsPanel && createPortal(
+      <PlayRecordsPanel
+        isOpen={showPlayRecordsPanel}
+        onClose={() => setShowPlayRecordsPanel(false)}
+      />,
       document.body
     )}
   </>
